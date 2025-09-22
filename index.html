@@ -17,11 +17,30 @@
       .container{max-width:1100px; margin:0 auto; padding:0 16px}
 
       /* Hero (welcome image) */
-      .hero{position:relative; height:100vh; width:100%; display:grid; place-items:center; overflow:hidden; user-select:none; cursor:grab}
+      .hero{
+        position:relative; height:100vh; width:100%;
+        display:grid; place-items:center; overflow:hidden;
+        user-select:none; cursor:grab
+      }
       .hero:active{cursor:grabbing}
-      .hero img{max-width:min(100%,1400px); max-height:100%; object-fit:contain; filter:drop-shadow(0 10px 40px rgba(0,0,0,.6));}
-      .scroll-hint{position:absolute; bottom:20px; left:50%; transform:translateX(-50%); font-size:14px; color:var(--muted); opacity:.85; display:flex; gap:8px; align-items:center}
-      .chevron{display:inline-block; width:10px; height:10px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:rotate(45deg); animation:bounce 1.5s infinite}
+      .hero img{
+        max-width:min(100%,1400px); max-height:100%;
+        object-fit:contain;
+        filter:drop-shadow(0 10px 40px rgba(0,0,0,.6));
+        /* 성능/부드러움 업 */
+        will-change: transform, opacity, filter;
+        transition: filter .18s ease-out;
+      }
+      .scroll-hint{
+        position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+        font-size:14px; color:var(--muted); opacity:.85;
+        display:flex; gap:8px; align-items:center
+      }
+      .chevron{
+        display:inline-block; width:10px; height:10px;
+        border-right:2px solid var(--muted); border-bottom:2px solid var(--muted);
+        transform:rotate(45deg); animation:bounce 1.5s infinite
+      }
       @keyframes bounce{0%,100%{transform:translateY(0) rotate(45deg)}50%{transform:translateY(6px) rotate(45deg)}}
 
       /* Section heading */
@@ -58,24 +77,24 @@
     </style>
   </head>
   <body>
-    <!-- HERO: 드래그로 스크롤 이동 가능 -->
+    <!-- HERO: 드래그 + 패럴랙스/페이드/블러 -->
     <header class="hero" id="hero">
       <img src="assets/hello.png" alt="Welcome screen" draggable="false" />
       <div class="scroll-hint" aria-hidden="true">
         <span class="chevron"></span>
-        아래로 드래그하거나 스크롤해봐
+        Please scroll down to continue
       </div>
     </header>
 
     <!-- VIDEOS -->
     <main class="section container" id="videos">
-      <h2>서현이 좋아하는 영상</h2>
-      <p class="muted">썸네일 클릭 → 모달로 바로 재생돼. 영상은 링크 배열에 추가만 하면 자동 생성돼!</p>
+      <h2>YouTube Playlist</h2>
+      <p class="muted">자동 생성된 영상 목록에서 원하는 영상을 선택하세요.</p>
       <div class="grid" id="videoGrid" aria-live="polite"></div>
     </main>
 
     <footer class="container">
-      © <span id="year"></span> nnseohnx · Built with ❤️
+      © <span id="year"></span> nnseohnx. All rights reserved
     </footer>
 
     <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="YouTube player">
@@ -89,7 +108,7 @@
         const hero = document.getElementById('hero');
         let isDown=false, startY=0, startScroll=0;
         const onDown = (y)=>{isDown=true; startY=y; startScroll=window.scrollY}
-        const onMove = (y)=>{ if(!isDown) return; const dy=y - startY; window.scrollTo({top: Math.max(0, startScroll - dy), behavior:'instant'}); }
+        const onMove = (y)=>{ if(!isDown) return; const dy=y - startY; window.scrollTo({top: Math.max(0, startScroll - dy)}); }
         const onUp = ()=>{ isDown=false }
 
         hero.addEventListener('mousedown', e=>{onDown(e.clientY)});
@@ -101,8 +120,54 @@
         window.addEventListener('touchend', onUp);
       })();
 
+      // ---------- 1.5) 스크롤 패럴랙스 & 페이드/블러 효과
+      (function heroScrollEffects(){
+        const hero = document.getElementById('hero');
+        const img  = hero.querySelector('img');
+        let ticking = false;
+
+        function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+        function apply(){
+          const vh = window.innerHeight || 1;
+          // 히어로 높이(1vh) 구간까지만 효과 비율 계산
+          const y  = clamp(window.scrollY, 0, vh);
+          const p  = y / vh;                 // 진행도 0~1
+          const translateY = -p * 140;       // 스크롤 내릴수록 이미지가 '위로' 이동
+          const opacity    = Math.max(0, 1 - p * 1.1); // 점점 사라짐
+          const blur       = (p * 8).toFixed(2);       // 점점 흐릿
+          const scale      = (1 + p * 0.03).toFixed(3);// 살짝 확대
+
+          img.style.transform = `translateY(${translateY}px) scale(${scale})`;
+          img.style.opacity   = opacity.toFixed(3);
+          img.style.filter    = `drop-shadow(0 10px 40px rgba(0,0,0,.6)) blur(${blur}px)`;
+          ticking = false;
+        }
+
+        function onScroll(){
+          if(!ticking){ requestAnimationFrame(apply); ticking = true; }
+        }
+
+        // 모션 민감 사용자 배려(선택): OS에서 '감소' 설정 시 최소화
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (mq.matches) {
+          // 효과 약화 버전
+          window.addEventListener('scroll', ()=>{
+            const vh = window.innerHeight || 1;
+            const y  = Math.min(window.scrollY, vh);
+            const p  = y / vh;
+            img.style.transform = `translateY(${-p*60}px)`; // 이동만 살짝
+            img.style.opacity   = (1 - p*0.8).toFixed(3);
+            img.style.filter    = `drop-shadow(0 10px 40px rgba(0,0,0,.6))`;
+          }, {passive:true});
+        } else {
+          window.addEventListener('scroll', onScroll, { passive:true });
+          window.addEventListener('resize', onScroll, { passive:true });
+          apply(); // 초기 1회
+        }
+      })();
+
       // ---------- 2) 유튜브 그리드 생성
-      // 여기에 링크만 추가하면 자동으로 카드가 생겨.
       const videoLinks = [
         'https://youtu.be/gPDcwjJ8pLg?si=1wh6G2gpDVRL0QHc',
         'https://youtu.be/5mOVgCte-gU?si=j0iZbBioMo0yIvDx',
@@ -207,6 +272,12 @@
 
       // ---------- 4) year
       document.getElementById('year').textContent = new Date().getFullYear();
+
+      // === 튜닝 팁 ===
+      // translateY 세기: translateY = -p * 140  (140을 180~220으로 올리면 더 위로 훅 올라감)
+      // 사라지는 속도:   opacity = 1 - p * 1.1  (1.1을 1.3~1.5로 키우면 더 빨리 사라짐)
+      // 블러 강도:       blur = p * 8           (8을 5로 낮추면 덜 흐릿함)
+      // 확대감:          scale = 1 + p * 0.03   (0으로 바꾸면 확대 없이 이동/페이드만)
     </script>
   </body>
 </html>
