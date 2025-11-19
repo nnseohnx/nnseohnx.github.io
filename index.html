@@ -16,77 +16,136 @@
       a{color:inherit; text-decoration:none}
       .container{max-width:1100px; margin:0 auto; padding:0 16px}
 
-      /* Hero (welcome image) */
+      /* ---------- HERO BASE ---------- */
       .hero{
         position:relative; height:100vh; width:100%;
-        display:grid; place-items:center; overflow:hidden;
-        user-select:none; cursor:grab
+        overflow:hidden; display:flex; align-items:center; justify-content:center;
+        user-select:none; cursor:grab;
       }
       .hero:active{cursor:grabbing}
-      .hero img{
-        max-width:min(100%,1400px); max-height:100%;
-        object-fit:contain;
+
+      /* ---------- HERO: VIDEO + OVERLAY ---------- */
+      .video-wrapper{
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      .video-wrapper video{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
         filter:drop-shadow(0 10px 40px rgba(0,0,0,.6));
-        /* 성능/부드러움 업 */
         will-change: transform, opacity, filter;
         transition: filter .18s ease-out;
       }
+      .video-overlay{
+        position:absolute;
+        top:0; left:0;
+        width:100%; height:100%;
+        object-fit:contain;
+        pointer-events:none;
+      }
+
+      /* ---------- SCROLL HINT ---------- */
       .scroll-hint{
         position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
         font-size:14px; color:var(--muted); opacity:.85;
-        display:flex; gap:8px; align-items:center
+        display:flex; gap:8px; align-items:center;
+        z-index:10;
       }
       .chevron{
         display:inline-block; width:10px; height:10px;
         border-right:2px solid var(--muted); border-bottom:2px solid var(--muted);
-        transform:rotate(45deg); animation:bounce 1.5s infinite
+        transform:rotate(45deg); animation:bounce 1.5s infinite;
       }
-      @keyframes bounce{0%,100%{transform:translateY(0) rotate(45deg)}50%{transform:translateY(6px) rotate(45deg)}}
+      @keyframes bounce{
+        0%,100%{transform:translateY(0) rotate(45deg)}
+        50%{transform:translateY(6px) rotate(45deg)}
+      }
 
-      /* Section heading */
+      /* ---------- CONTENT SECTIONS ---------- */
       .section{padding:56px 0}
       .section h2{font-size:clamp(20px, 3vw, 28px); margin:0 0 20px; letter-spacing:.4px}
       .section p.muted{margin-top:0; color:var(--muted); font-size:14px}
 
-      /* Video grid */
+      /* VIDEO GRID */
       .grid{display:grid; grid-template-columns:repeat(1, minmax(0,1fr)); gap:16px}
       @media(min-width:560px){.grid{grid-template-columns:repeat(2, minmax(0,1fr))}}
       @media(min-width:900px){.grid{grid-template-columns:repeat(3, minmax(0,1fr))}}
 
-      .card{background:var(--card); border:1px solid #1f1f1f; border-radius:18px; overflow:hidden; transition:transform .2s ease, box-shadow .2s ease}
-      .card:hover{transform:translateY(-2px); box-shadow:0 12px 24px rgba(0,0,0,.35)}
+      .card{
+        background:var(--card); border:1px solid #1f1f1f; border-radius:18px;
+        overflow:hidden; transition:transform .2s ease, box-shadow .2s ease;
+      }
+      .card:hover{
+        transform:translateY(-2px);
+        box-shadow:0 12px 24px rgba(0,0,0,.35);
+      }
       .thumb{aspect-ratio:16/9; width:100%; display:block; background:#0a0a0a; object-fit:cover}
       .meta{padding:12px 14px 16px}
       .title{font-weight:600; font-size:15px; margin:0 0 4px}
       .sub{color:var(--muted); font-size:12px}
       .play-btn{position:absolute; inset:0; display:grid; place-items:center}
-      .play-icon{width:64px; height:64px; border-radius:50%; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); display:grid; place-items:center; transition:transform .2s}
+      .play-icon{
+        width:64px; height:64px; border-radius:50%;
+        background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
+        display:grid; place-items:center; transition:transform .2s;
+      }
       .play-icon svg{width:26px; height:26px; fill:#fff; margin-left:3px}
       .card:hover .play-icon{transform:scale(1.06)}
       .thumb-wrap{position:relative}
 
-      /* Modal */
-      .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.75); z-index:40; padding:20px}
+      /* MODAL */
+      .modal{
+        position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+        background:rgba(0,0,0,.75); z-index:40; padding:20px;
+      }
       .modal.open{display:flex}
-      .modal-frame{width:min(100%, 960px); aspect-ratio:16/9; background:#000; border-radius:14px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.6)}
+      .modal-frame{
+        width:min(100%, 960px); aspect-ratio:16/9;
+        background:#000; border-radius:14px; overflow:hidden;
+        box-shadow:0 20px 60px rgba(0,0,0,.6);
+      }
       .modal iframe{width:100%; height:100%; border:0}
-      .modal .close{position:absolute; top:14px; right:16px; background:transparent; border:0; color:#fff; font-size:28px; cursor:pointer; line-height:1}
+      .modal .close{
+        position:absolute; top:14px; right:16px;
+        background:transparent; border:0;
+        color:#fff; font-size:28px; cursor:pointer; line-height:1;
+      }
 
-      /* Footer */
+      /* FOOTER */
       footer{padding:32px 0 60px; color:var(--muted); text-align:center}
     </style>
   </head>
+
   <body>
-    <!-- HERO: 드래그 + 패럴랙스/페이드/블러 -->
+    <!-- ---------- HERO: VIDEO BACKGROUND + PNG OVERLAY ---------- -->
     <header class="hero" id="hero">
-      <img src="assets/hello.png" alt="Welcome screen" draggable="false" />
+      <div class="video-wrapper">
+        <video 
+          src="assets/Main.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+        ></video>
+
+        <img 
+          src="assets/main.png"
+          alt="overlay"
+          class="video-overlay"
+        />
+      </div>
+
       <div class="scroll-hint" aria-hidden="true">
         <span class="chevron"></span>
         Please scroll down to continue
       </div>
     </header>
 
-    <!-- VIDEOS -->
+    <!-- ---------- VIDEOS ---------- -->
     <main class="section container" id="videos">
       <h2>YouTube Playlist</h2>
       <p class="muted">자동 생성된 영상 목록에서 원하는 영상을 선택하세요.</p>
@@ -97,13 +156,14 @@
       © <span id="year"></span> nnseohnx. All rights reserved
     </footer>
 
+    <!-- ---------- MODAL ---------- -->
     <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="YouTube player">
       <button class="close" id="closeModal" aria-label="닫기">×</button>
       <div class="modal-frame" id="modalFrame"></div>
     </div>
 
     <script>
-      // ---------- 1) 드래그로 스크롤 (hero 영역)
+      /* ---------- DRAG SCROLL HERO ---------- */
       (function enableDragScroll(){
         const hero = document.getElementById('hero');
         let isDown=false, startY=0, startScroll=0;
@@ -114,33 +174,33 @@
         hero.addEventListener('mousedown', e=>{onDown(e.clientY)});
         window.addEventListener('mousemove', e=>{onMove(e.clientY)});
         window.addEventListener('mouseup', onUp);
-        // 터치 지원
         hero.addEventListener('touchstart', e=>{onDown(e.touches[0].clientY)}, {passive:true});
         window.addEventListener('touchmove', e=>{onMove(e.touches[0].clientY)}, {passive:true});
         window.addEventListener('touchend', onUp);
       })();
 
-      // ---------- 1.5) 스크롤 패럴랙스 & 페이드/블러 효과
+      /* ---------- PARALLAX + FADE ---------- */
       (function heroScrollEffects(){
         const hero = document.getElementById('hero');
-        const img  = hero.querySelector('img');
+        const vid  = hero.querySelector('video');
         let ticking = false;
 
         function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 
         function apply(){
           const vh = window.innerHeight || 1;
-          // 히어로 높이(1vh) 구간까지만 효과 비율 계산
           const y  = clamp(window.scrollY, 0, vh);
-          const p  = y / vh;                 // 진행도 0~1
-          const translateY = -p * 140;       // 스크롤 내릴수록 이미지가 '위로' 이동
-          const opacity    = Math.max(0, 1 - p * 1.1); // 점점 사라짐
-          const blur       = (p * 8).toFixed(2);       // 점점 흐릿
-          const scale      = (1 + p * 0.03).toFixed(3);// 살짝 확대
+          const p  = y / vh;
 
-          img.style.transform = `translateY(${translateY}px) scale(${scale})`;
-          img.style.opacity   = opacity.toFixed(3);
-          img.style.filter    = `drop-shadow(0 10px 40px rgba(0,0,0,.6)) blur(${blur}px)`;
+          const translateY = -p * 140;
+          const opacity    = Math.max(0, 1 - p * 1.1);
+          const blur       = (p * 8).toFixed(2);
+          const scale      = (1 + p * 0.03).toFixed(3);
+
+          vid.style.transform = `translateY(${translateY}px) scale(${scale})`;
+          vid.style.opacity   = opacity.toFixed(3);
+          vid.style.filter    = `drop-shadow(0 10px 40px rgba(0,0,0,.6)) blur(${blur}px)`;
+
           ticking = false;
         }
 
@@ -148,48 +208,31 @@
           if(!ticking){ requestAnimationFrame(apply); ticking = true; }
         }
 
-        // 모션 민감 사용자 배려(선택): OS에서 '감소' 설정 시 최소화
-        const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-        if (mq.matches) {
-          // 효과 약화 버전
-          window.addEventListener('scroll', ()=>{
-            const vh = window.innerHeight || 1;
-            const y  = Math.min(window.scrollY, vh);
-            const p  = y / vh;
-            img.style.transform = `translateY(${-p*60}px)`; // 이동만 살짝
-            img.style.opacity   = (1 - p*0.8).toFixed(3);
-            img.style.filter    = `drop-shadow(0 10px 40px rgba(0,0,0,.6))`;
-          }, {passive:true});
-        } else {
-          window.addEventListener('scroll', onScroll, { passive:true });
-          window.addEventListener('resize', onScroll, { passive:true });
-          apply(); // 초기 1회
-        }
+        window.addEventListener('scroll', onScroll, { passive:true });
+        window.addEventListener('resize', onScroll, { passive:true });
+        apply();
       })();
 
-      // ---------- 2) 유튜브 그리드 생성
+      /* ---------- BUILD YOUTUBE GRID ---------- */
       const videoLinks = [
         'https://youtu.be/gPDcwjJ8pLg?si=1wh6G2gpDVRL0QHc',
-        'https://youtu.be/5mOVgCte-gU?si=j0iZbBioMo0yIvDx',
+        'https://youtu.be/5mOVgCte-gU?si=j0iZbBioMo0yIvDx'
       ];
 
       const grid = document.getElementById('videoGrid');
 
       function getYouTubeId(url){
-        // youtu.be/<id> 또는 youtube.com/watch?v=<id> 케이스 지원
         const m = url.match(/(?:youtu\.be\/|v=)([A-Za-z0-9_-]{6,})/);
         return m ? m[1] : null;
       }
-
       function thumbUrl(id){
         return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
       }
 
       async function fetchTitle(url){
-        // noembed 시도 → 실패 시 ID 반환
         try{
           const r = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
-          if(!r.ok) throw new Error('noembed blocked');
+          if(!r.ok) throw new Error();
           const j = await r.json();
           return j.title || url;
         }catch{
@@ -199,14 +242,15 @@
       }
 
       async function buildGrid(){
-        const items = await Promise.all(videoLinks.map(async (url)=>{
-          const id = getYouTubeId(url);
-          const title = await fetchTitle(url);
-          return { id, url, title };
-        }));
+        const items = await Promise.all(videoLinks.map(async (url)=>({
+          id: getYouTubeId(url),
+          url,
+          title: await fetchTitle(url)
+        })));
 
         for(const v of items){
           if(!v.id) continue;
+
           const card = document.createElement('article');
           card.className = 'card';
 
@@ -225,19 +269,22 @@
           overlay.setAttribute('aria-label', `${v.title} 재생`);
           overlay.addEventListener('click', (e)=>{ e.preventDefault(); openModal(v.id); });
 
-          overlay.innerHTML = '<span class="play-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5v14l11-7z"/></svg></span>';
+          overlay.innerHTML = '<span class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>';
 
           wrap.appendChild(img);
           wrap.appendChild(overlay);
 
           const meta = document.createElement('div');
           meta.className = 'meta';
+
           const h3 = document.createElement('h3');
           h3.className = 'title';
           h3.textContent = v.title;
+
           const sub = document.createElement('div');
           sub.className = 'sub';
           sub.textContent = 'YouTube';
+
           meta.appendChild(h3);
           meta.appendChild(sub);
 
@@ -249,15 +296,14 @@
 
       buildGrid();
 
-      // ---------- 3) 모달 플레이어
+      /* ---------- MODAL ---------- */
       const modal = document.getElementById('modal');
       const frame = document.getElementById('modalFrame');
       const closeBtn = document.getElementById('closeModal');
 
       function openModal(id){
         modal.classList.add('open');
-        frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
-        // ESC로 닫기 지원
+        frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
         document.addEventListener('keydown', onEsc);
       }
       function closeModal(){
@@ -270,14 +316,8 @@
       modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
       closeBtn.addEventListener('click', closeModal);
 
-      // ---------- 4) year
+      /* ---------- FOOTER YEAR ---------- */
       document.getElementById('year').textContent = new Date().getFullYear();
-
-      // === 튜닝 팁 ===
-      // translateY 세기: translateY = -p * 140  (140을 180~220으로 올리면 더 위로 훅 올라감)
-      // 사라지는 속도:   opacity = 1 - p * 1.1  (1.1을 1.3~1.5로 키우면 더 빨리 사라짐)
-      // 블러 강도:       blur = p * 8           (8을 5로 낮추면 덜 흐릿함)
-      // 확대감:          scale = 1 + p * 0.03   (0으로 바꾸면 확대 없이 이동/페이드만)
     </script>
   </body>
 </html>
