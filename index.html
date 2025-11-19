@@ -24,7 +24,7 @@
       }
       .hero:active{cursor:grabbing}
 
-      /* ---------- HERO: VIDEO + OVERLAY ---------- */
+      /* ---------- VIDEO BACKGROUND ---------- */
       .video-wrapper{
         position: relative;
         width: 100%;
@@ -40,10 +40,16 @@
         will-change: transform, opacity, filter;
         transition: filter .18s ease-out;
       }
-      .video-overlay{
+
+      /* ---------- PNG CENTER SMALL ---------- */
+      .overlay-center{
         position:absolute;
-        top:0; left:0;
-        width:100%; height:100%;
+        top:50%;
+        left:50%;
+        transform:translate(-50%, -50%);
+        width:60%;          /* PNG 크기 조절 */
+        max-width:800px;
+        height:auto;
         object-fit:contain;
         pointer-events:none;
       }
@@ -121,7 +127,7 @@
   </head>
 
   <body>
-    <!-- ---------- HERO: VIDEO BACKGROUND + PNG OVERLAY ---------- -->
+    <!-- ---------- HERO: VIDEO BACKGROUND + PNG CENTER ---------- -->
     <header class="hero" id="hero">
       <div class="video-wrapper">
         <video 
@@ -133,9 +139,9 @@
         ></video>
 
         <img 
-          src="assets/main.png"
+          src="assets/hello.png"
           alt="overlay"
-          class="video-overlay"
+          class="overlay-center"
         />
       </div>
 
