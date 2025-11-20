@@ -4,6 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>NNSEOHNX</title>
+
+    <!-- 링크 미리보기(썸네일) hello.png로 설정 -->
+    <meta property="og:title" content="Seohyun | nnseohnx.github.io" />
+    <meta property="og:description" content="여기를 눌러 링크를 확인하세요." />
+    <meta property="og:image" content="https://nnseohnx.github.io/assets/hello.png" />
+    <meta property="og:url" content="https://nnseohnx.github.io/" />
+    <meta property="twitter:card" content="summary_large_image" />
+
     <style>
       :root{
         --bg:#000; --fg:#eaeaea; --muted:#9aa0a6; --card:#111; --accent:#7c3aed;
@@ -16,45 +24,50 @@
       a{color:inherit; text-decoration:none}
       .container{max-width:1100px; margin:0 auto; padding:0 16px}
 
-      /* ---------- HERO BASE ---------- */
+      /* ---------- HERO 영역 ---------- */
       .hero{
-        position:relative; height:100vh; width:100%;
-        overflow:hidden; display:flex; align-items:center; justify-content:center;
-        user-select:none; cursor:grab;
+        position:relative;
+        height:100vh;
+        width:100%;
+        background:#000;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        overflow:hidden;
+        user-select:none;
+        cursor:grab;
       }
       .hero:active{cursor:grabbing}
 
-      /* ---------- VIDEO BACKGROUND ---------- */
-      .video-wrapper{
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-      .video-wrapper video{
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        filter:drop-shadow(0 10px 40px rgba(0,0,0,.6));
-        will-change: transform, opacity, filter;
-        transition: filter .18s ease-out;
+      /* 화면 안에 들어가는 "영상 프레임" (빨간 박스 느낌) */
+      .hero-frame{
+        position:relative;
+        width:min(900px, 80vw);   /* 동영상 전체 크기 */
+        aspect-ratio:16/9;        /* 비율 고정 */
+        background:#000;
+        overflow:hidden;
       }
 
-      /* ---------- PNG CENTER SMALL ---------- */
+      .hero-frame video{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+      }
+
+      /* hello.png (노란 박스 느낌) */
       .overlay-center{
         position:absolute;
         top:50%;
         left:50%;
         transform:translate(-50%, -50%);
-        width:60%;          /* PNG 크기 조절 */
-        max-width:800px;
+        width:65%;           /* 동영상 안에서의 상대 크기 */
         height:auto;
         object-fit:contain;
         pointer-events:none;
       }
 
-      /* ---------- SCROLL HINT ---------- */
+      /* ---------- 스크롤 힌트 ---------- */
       .scroll-hint{
         position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
         font-size:14px; color:var(--muted); opacity:.85;
@@ -127,9 +140,9 @@
   </head>
 
   <body>
-    <!-- ---------- HERO: VIDEO BACKGROUND + PNG CENTER ---------- -->
+    <!-- ---------- HERO: 영상 + hello.png ---------- -->
     <header class="hero" id="hero">
-      <div class="video-wrapper">
+      <div class="hero-frame">
         <video 
           src="assets/Main.mp4"
           autoplay
@@ -169,7 +182,7 @@
     </div>
 
     <script>
-      /* ---------- DRAG SCROLL HERO ---------- */
+      /* ---------- HERO 드래그로 스크롤 (원하면 유지) ---------- */
       (function enableDragScroll(){
         const hero = document.getElementById('hero');
         let isDown=false, startY=0, startScroll=0;
@@ -185,41 +198,7 @@
         window.addEventListener('touchend', onUp);
       })();
 
-      /* ---------- PARALLAX + FADE ---------- */
-      (function heroScrollEffects(){
-        const hero = document.getElementById('hero');
-        const vid  = hero.querySelector('video');
-        let ticking = false;
-
-        function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
-
-        function apply(){
-          const vh = window.innerHeight || 1;
-          const y  = clamp(window.scrollY, 0, vh);
-          const p  = y / vh;
-
-          const translateY = -p * 140;
-          const opacity    = Math.max(0, 1 - p * 1.1);
-          const blur       = (p * 8).toFixed(2);
-          const scale      = (1 + p * 0.03).toFixed(3);
-
-          vid.style.transform = `translateY(${translateY}px) scale(${scale})`;
-          vid.style.opacity   = opacity.toFixed(3);
-          vid.style.filter    = `drop-shadow(0 10px 40px rgba(0,0,0,.6)) blur(${blur}px)`;
-
-          ticking = false;
-        }
-
-        function onScroll(){
-          if(!ticking){ requestAnimationFrame(apply); ticking = true; }
-        }
-
-        window.addEventListener('scroll', onScroll, { passive:true });
-        window.addEventListener('resize', onScroll, { passive:true });
-        apply();
-      })();
-
-      /* ---------- BUILD YOUTUBE GRID ---------- */
+      /* ---------- YOUTUBE GRID ---------- */
       const videoLinks = [
         'https://youtu.be/gPDcwjJ8pLg?si=1wh6G2gpDVRL0QHc',
         'https://youtu.be/5mOVgCte-gU?si=j0iZbBioMo0yIvDx'
