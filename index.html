@@ -2,38 +2,57 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seohyeon's Space</title>
+    <title>NNSEOHNX | Portfolio</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #0a0a0a; color: #f0f0f0; font-family: 'Pretendard', sans-serif; overflow-x: hidden; }
-        
-        /* 메인 비디오 섹션 */
-        .hero { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
-        video { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
-        .content { z-index: 1; text-align: center; }
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Pretendard:wght@300;400&display=swap');
 
-        /* 에셋 배치 */
-        .asset-box { margin-top: 20px; display: flex; gap: 20px; justify-content: center; }
-        img { width: 300px; border-radius: 15px; border: 1px solid #333; transition: 0.3s; }
-        img:hover { transform: scale(1.05); border-color: #fff; }
+        body, html { margin: 0; padding: 0; background-color: #050505; color: #d1d1d1; font-family: 'Pretendard', sans-serif; overflow-x: hidden; }
         
-        h1 { font-size: 3rem; margin-bottom: 10px; }
+        /* 메인 컨테이너 - 명함 컨셉 */
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .slate-card {
+            background: #101010;
+            padding: 80px 120px;
+            border: 1px solid #222;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            text-align: center;
+            transition: transform 0.5s ease;
+        }
+        .slate-card:hover { transform: translateY(-10px); }
+        
+        h1 { font-family: 'Cinzel', serif; font-size: 3rem; letter-spacing: 8px; margin-bottom: 20px; color: #fff; }
+        .divider { width: 100px; height: 1px; background: #444; margin: 0 auto 30px; }
+        p { font-size: 0.9rem; letter-spacing: 2px; opacity: 0.6; }
+
+        /* 음악 플레이어 (미니멀) */
+        .player-box { position: fixed; bottom: 40px; }
+        button { background: none; border: 1px solid #333; color: #666; padding: 10px 20px; cursor: pointer; transition: 0.3s; }
+        button:hover { color: #fff; border-color: #fff; }
     </style>
 </head>
 <body>
-    <section class="hero">
-        <video autoplay muted loop playsinline>
-            <source src="assets/Main.mp4" type="video/mp4">
-        </video>
-        <div class="content">
-            <h1>Nam Seohyeon</h1>
-            <p>Welcome to my dark aesthetic portfolio</p>
-            <div class="asset-box">
-                <img src="assets/hello.png" alt="Hello">
-                <img src="assets/main.png" alt="Main">
-            </div>
+    <div class="hero">
+        <div class="slate-card">
+            <h1>NNSEOHNX</h1>
+            <div class="divider"></div>
+            <p>Nam Seohyun</p>
+            <p>Artificial Intelligence Major</p>
         </div>
-    </section>
+        
+        <div class="player-box">
+            <button onclick="playMusic()">▶︎ PLAY AMBIENT</button>
+            <audio id="bgm" loop>
+                <!-- 저작권 프리 앰비언트 음원 링크 삽입 -->
+                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+    </div>
+
+    <script>
+        function playMusic() {
+            const audio = document.getElementById("bgm");
+            audio.play();
+        }
+    </script>
 </body>
 </html>
